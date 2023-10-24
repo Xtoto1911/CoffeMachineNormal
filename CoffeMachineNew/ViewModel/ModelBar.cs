@@ -478,7 +478,7 @@ namespace CoffeMachineNew.ViewModel
         {
             get
             {
-                return !Removing ? ConfirmRemove : removeDrink ??=
+                return !Removing && !IsChecked ? ConfirmRemove : removeDrink ??=
                   new RelayCommand(obj =>
                   {
                       Drinks.Remove(SelectedDrink);
@@ -504,7 +504,7 @@ namespace CoffeMachineNew.ViewModel
         {
             get
             {
-                return !Removing ? ConfirmRemove : removeToping ??=
+                return !Removing && !IsChecked ? ConfirmRemove : removeToping ??=
                   new RelayCommand(obj =>
                   {
                       Topings.Remove(obj as Topping);
@@ -584,6 +584,20 @@ namespace CoffeMachineNew.ViewModel
                       Removing = bool.Parse((string)obj);
                       ConfirmView = false;
                   }, obj => true);//canExecute
+            }
+        }
+
+        private bool isChecked;
+        public bool IsChecked
+        {
+            get { return isChecked; }
+            set
+            {
+                if (isChecked != value)
+                {
+                    isChecked = value;
+                    OnPropertyChanged(nameof(IsChecked));
+                }
             }
         }
         #endregion

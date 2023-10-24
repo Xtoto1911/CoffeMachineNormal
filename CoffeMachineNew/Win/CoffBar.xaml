@@ -541,9 +541,10 @@
                     <ColumnDefinition Width="25*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="21*"/>
                     <RowDefinition Height="4*"/>
-                    <RowDefinition/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="5*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="Для подтверждения удаления нажмите еще раз"
                    FontSize="18"
@@ -551,9 +552,9 @@
                    TextAlignment="Center" 
                    Grid.Column="1" 
                    HorizontalAlignment="Center" 
-                   VerticalAlignment="Center"/>
+                   VerticalAlignment="Top" Margin="0,101,0,0"/>
                 <Button 
-                        Grid.Row="1"
+                        Grid.Row="2"
                         Background="LightGreen"
                         Command="{Binding RemoveAnsw}"
                         CommandParameter="true" 
@@ -564,6 +565,11 @@
                               TextAlignment="Justify"
                               FontSize="20"/>
                 </Button>
+                <CheckBox Content="Не показывать больше?"
+                          FontSize="14" 
+                          Grid.Row="1"
+                          IsChecked="{Binding IsChecked}"
+                          Grid.Column="1" HorizontalAlignment="Center"/>
             </Grid>
             <Grid.Style>
                 <Style TargetType="Grid">
