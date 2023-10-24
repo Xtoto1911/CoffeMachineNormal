@@ -100,10 +100,10 @@
         <Grid x:Name="EditPanel"
           Background="LightBlue">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="126*"/>
-                <ColumnDefinition Width="115*"/>
-                <ColumnDefinition Width="81*"/>
-                <ColumnDefinition Width="78*"/>
+                <ColumnDefinition Width="54*"/>
+                <ColumnDefinition Width="56*"/>
+                <ColumnDefinition Width="51*"/>
+                <ColumnDefinition Width="39*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="119*"/>
@@ -141,13 +141,13 @@
                   Grid.RowSpan="2" 
                   Grid.Column="2" 
                   Background="#FF8A6F7E"
-                  ItemsSource="{Binding DrinkToppings}"
+                  ItemsSource="{Binding DrinkTopings}"
                   >
                 <ListView.ItemTemplateSelector>
                     <nits:NewItemTemplateSelector>
                         <nits:NewItemTemplateSelector.ItemTemplate>
                             <DataTemplate>
-                                <Grid Width="200">
+                                <Grid Width="159">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition/>
@@ -174,8 +174,8 @@
                         </nits:NewItemTemplateSelector.ItemTemplate>
                         <nits:NewItemTemplateSelector.NewItemPlaceholderTemplate>
                             <DataTemplate>
-                                <Button Margin="3"
-                                    Width="200"
+                                <Button Margin="2"
+                                    Width="159"
                                     VerticalAlignment="Stretch"
                                     Command="{Binding DataContext.ShowTopingsToggle, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     >
@@ -205,15 +205,68 @@
                 />
             <Grid.Style>
                 <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Hidden"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding DrinkEdit}" Value="False">
-                            <Setter Property="Visibility" Value="Hidden"/>
-                        </DataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <!--<Condition Binding="{Binding DrinksView}" Value="False"/>
+                                <Condition Binding="{Binding EditMode}" Value="True"/>-->
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
         </Grid>
         <!--Лист заполнения-->
-        
+        <!--Панель заказа-->
+        <Grid x:Name="OrderPanel"
+              Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*"/>
+                <ColumnDefinition Width="50*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="59*"/>
+                    <RowDefinition Height="73*"/>
+                    <RowDefinition Height="318*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding DataContext.SelectedDrink.Name, 
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           FontSize="14"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" 
+                           Grid.Row ="0"/>
+                <TextBlock Text="{Binding DataContext.Sum, 
+                                          RelativeSource={RelativeSource AncestorType=UserControl},
+                                          StringFormat=Сумма {0} р.}"
+                           FontSize="14"
+                           TextAlignment="Center" 
+                           Grid.Row="1"/>
+                <Image Source="{Binding DataContext.SelectedDrink.AvatarPath, 
+                                        RelativeSource={RelativeSource AncestorType=UserControl},
+                                        Mode=TwoWay,
+                                        UpdateSourceTrigger=PropertyChanged}" 
+                       Grid.Row="2"/>
+            </Grid>
+            <Grid Grid.Column="1">
+                <TextBlock Text="Выберите топпинг"
+                           FontSize="14"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" Grid.Column="1"/>
+                <TextBlock Text="Вы выбрали"
+                           FontSize="14"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" 
+                           Grid.Column="1"
+                           Grid.Row="2"/>
+                <ListView Background="AliceBlue"
+                      >
+
+                </ListView>
+            </Grid>
+        </Grid>
+        <!--Палель заказа-->
     </Grid>
 </UserControl>

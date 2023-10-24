@@ -105,6 +105,7 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
+
         string topingScrPath = string.Empty;
         public string TopingSrcPath
         {
@@ -121,6 +122,7 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
+
         int _Wallet;
         public int Wallet
         {
@@ -147,6 +149,7 @@ namespace CoffeMachineNew.ViewModel
                     });
             }
         }
+
         void AvaterPathSelect()
         {
             OpenFileDialog file = new OpenFileDialog();
@@ -154,6 +157,7 @@ namespace CoffeMachineNew.ViewModel
             if (file.FileName != "" && file.FileName != SelectedDrink.ImagePath)
                 SelectedDrink.ImagePath = file.FileName;
         }
+
         #endregion
         #region Настройки отображения
         bool editMode = false;
@@ -200,10 +204,12 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
+
         public bool OrderSetup//OrderPanel
         {
             get { return !editMode && !drinksView; }
         }
+
         public bool DrinkEdit//isEditInterectionPanel
         {
             get { return editMode && !drinksView; }
