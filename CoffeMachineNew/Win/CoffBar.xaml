@@ -24,7 +24,7 @@
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Vertical"
-                               MaxHeight="310"/>
+                               MaxHeight="400"/>
                         <!--<UniformGrid Rows="3"
                                  Columns="{Binding Count, UpdateSourceTrigger=PropertyChanged}"/>-->
                     </ItemsPanelTemplate>
@@ -33,10 +33,10 @@
                     <nits:NewItemTemplateSelector>
                         <nits:NewItemTemplateSelector.ItemTemplate>
                             <DataTemplate>
-                                <Grid  Height="85"
-                                       MinHeight="85"
-                                       Width="65"
-                                       MaxWidth="65"
+                                <Grid  Height="100"
+                                       MinHeight="100"
+                                       Width="100"
+                                       MaxWidth="100"
                                        HorizontalAlignment="Center"
                                        Margin="2">
                                     <Grid.RowDefinitions>
@@ -60,10 +60,10 @@
                         </nits:NewItemTemplateSelector.ItemTemplate>
                         <nits:NewItemTemplateSelector.NewItemPlaceholderTemplate>
                             <DataTemplate>
-                                <Button MinHeight="80"
-                                        Height="80" 
-                                        Width="65"
-                                        MaxWidth="65"
+                                <Button MinHeight="100"
+                                        Height="100" 
+                                        Width="100"
+                                        MaxWidth="100"
                                         HorizontalAlignment="Center"
                                         VerticalContentAlignment="Center"
                                         Command="{Binding DataContext.AddDrink, RelativeSource={RelativeSource AncestorType=UserControl}}">
@@ -175,11 +175,12 @@
                         <nits:NewItemTemplateSelector.NewItemPlaceholderTemplate>
                             <DataTemplate>
                                 <Button Margin="2"
-                                    Width="159"
+                                    Width="233"
                                     VerticalAlignment="Stretch"
-                                    Command="{Binding DataContext.ShowTopingsToggle, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Command="{Binding DataContext.ShowTopingsToggle, 
+                                                      RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Stretch"
                                     >
-                                    <TextBlock Text="+"
+                                    <TextBlock Text="Добавить"
                                            VerticalAlignment="Center"
                                            HorizontalAlignment="Center"
                                            TextAlignment="Center"/>
@@ -402,134 +403,8 @@
             </Grid.Style>
         </Grid>
         <!--Палель заказа-->
-        <!--Панельзаполнения топпингов-->
-        <Grid x:Name="ToppingPanel"
-              Background="White">
-            <ListView ItemsSource="{Binding Topings}"
-              Background="White"
-              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-              ScrollViewer.VerticalScrollBarVisibility="Hidden">
-                <ListView.ItemTemplateSelector>
-                    <nits:NewItemTemplateSelector>
-                        <nits:NewItemTemplateSelector.ItemTemplate>
-                            <DataTemplate>
-                                <Grid MinHeight="60"
-                                      Width="200">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <TextBox Text="{Binding Name,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                             TextAlignment="Center"
-                                             TextWrapping="Wrap"
-                                             FontSize="14"
-                                             Margin="2"
-                                             Background="Transparent"
-                                             BorderThickness="0,0,0,2"/>
-                                    <Grid Grid.Row="1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-                                        <Label Content="Цена за ед"
-                                               HorizontalContentAlignment="Center"/>
-                                        <Label Content="Макс. кол-во"
-                                               HorizontalContentAlignment="Center"
-                                               Grid.Column="1"/>
-                                        <TextBox Text="{Binding Price,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                                 TextAlignment="Center"
-                                                 TextWrapping="Wrap"
-                                                 FontSize="20"
-                                                 Margin="2"
-                                                 Background="Transparent"
-                                                 BorderThickness="1"
-                                                 Grid.Row="1"/>
-                                        <TextBox Text="{Binding MaxCnt,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                                 TextAlignment="Center"
-                                                 TextWrapping="Wrap"
-                                                 FontSize="20"
-                                                 Margin="2"
-                                                 Background="Transparent"
-                                                 BorderThickness="1"
-                                                 Grid.Column="1"
-                                                 Grid.Row="1"/>
-                                    </Grid>
-                                    <Grid Grid.Row="3">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-                                        <Button Margin="5"
-                                                Background="Red"
-                                                Command="{Binding DataContext.RemoveToping, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding}">
-                                            <TextBlock Text="X"
-                                                       VerticalAlignment="Center"
-                                                       HorizontalAlignment="Center"
-                                                       TextAlignment="Justify"
-                                                       FontSize="20"/>
-                                        </Button>
-                                        <Button Margin="5"
-                                                Grid.Column="1"
-                                                Background="LightGreen"
-                                                Command="{Binding DataContext.AddDrinkToping, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding}">
-                                            <TextBlock Text="+"
-                                                       VerticalAlignment="Center"
-                                                       HorizontalAlignment="Center"
-                                                       TextAlignment="Justify"
-                                                       FontSize="20"/>
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </DataTemplate>
-                        </nits:NewItemTemplateSelector.ItemTemplate>
-                        <nits:NewItemTemplateSelector.NewItemPlaceholderTemplate>
-                            <DataTemplate>
-                                <Button Height="60"
-                                        Width="200"
-                                        Margin="2"
-                                        Background="Transparent"
-                                        Command="{Binding DataContext.AddToping, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                                    <TextBlock Text="Добавить"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"
-                                               TextAlignment="Center"/>
-                                </Button>
-                            </DataTemplate>
-                        </nits:NewItemTemplateSelector.NewItemPlaceholderTemplate>
-                    </nits:NewItemTemplateSelector>
-                </ListView.ItemTemplateSelector>
-            </ListView>
-            <Button Margin="3"
-                    Height="20"
-                    VerticalAlignment="Bottom"
-                    Command="{Binding ShowTopingsToggle}">
-                <TextBlock Text="Назад"
-                   FontSize="14"
-                   VerticalAlignment="Bottom"
-                   HorizontalAlignment="Center"
-                   TextAlignment="Center"/>
-            </Button>
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding TopingsView}" Value="False">
-                            <Setter Property="Visibility" Value="Hidden"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-        </Grid>
-        <!--Панельзаполнения топпингов-->
         <!--Всеми нелюбимый штука:)-->
-        <Grid>
+        <Grid x:Name="CheckDell">
             <Grid.Background>
                 <SolidColorBrush Color="White" Opacity="0.6"/>
             </Grid.Background>
@@ -541,21 +416,19 @@
                     <ColumnDefinition Width="25*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="21*"/>
-                    <RowDefinition Height="4*"/>
-                    <RowDefinition Height="20*"/>
-                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="209*"/>
+                    <RowDefinition Height="48*"/>
+                    <RowDefinition Height="148*"/>
+                    <RowDefinition Height="45*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="Для подтверждения удаления нажмите еще раз"
-                   FontSize="18"
+                   FontSize="14"
                    TextWrapping="Wrap"
                    TextAlignment="Center" 
-                   Grid.Column="1" 
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Top" Margin="0,101,0,0"/>
+                   Grid.Column="1" VerticalAlignment="Bottom"/>
                 <Button 
                         Grid.Row="2"
-                        Background="LightGreen"
+                        Background="LightGray"
                         Command="{Binding RemoveAnsw}"
                         CommandParameter="true" 
                         Grid.Column="1">
@@ -569,7 +442,7 @@
                           FontSize="14" 
                           Grid.Row="1"
                           IsChecked="{Binding IsChecked}"
-                          Grid.Column="1" HorizontalAlignment="Center"/>
+                          Grid.Column="1" HorizontalAlignment="Center" Width="174"/>
             </Grid>
             <Grid.Style>
                 <Style TargetType="Grid">
@@ -582,5 +455,46 @@
             </Grid.Style>
         </Grid>
         <!--Всеми нелюбимый штука:)-->
+        <!--Панельзаполнения топпингов-->
+        <Grid x:Name="ToppingPanel"
+              Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="80*"/>
+                <ColumnDefinition Width="10*"/>
+            </Grid.ColumnDefinitions>
+            <Button
+                    Content="←" 
+                    Click="ScrollLeft_Click"  />
+            <Button 
+                    Content="→" 
+                    Click="ScrollRight_Click" 
+                    Grid.Column="2" 
+                    />
+            <ListView ItemsSource="{Binding Topings}"
+                      HorizontalContentAlignment="Stretch"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
+                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                      Grid.Column="1">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Vertical"
+                                   MaxHeight="400"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplateSelector>
+                    <nits:NewItemTemplateSelector>
+                        <nits:NewItemTemplateSelector.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    
+                                </Grid>
+                            </DataTemplate>
+                        </nits:NewItemTemplateSelector.ItemTemplate>
+                    </nits:NewItemTemplateSelector>
+                </ListView.ItemTemplateSelector>
+            </ListView>
+        </Grid>
+        <!--Панельзаполнения топпингов-->
     </Grid>
 </UserControl>

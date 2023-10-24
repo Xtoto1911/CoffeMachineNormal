@@ -8,13 +8,13 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="Black">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="12*"/>
-            <ColumnDefinition Width="46*"/>
-            <ColumnDefinition Width="12*"/>
+            <ColumnDefinition Width="15*"/>
+            <ColumnDefinition Width="70*"/>
+            <ColumnDefinition Width="15*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="11*"/>
-            <RowDefinition Height="14*"/>
+            <RowDefinition Height="23*"/>
+            <RowDefinition Height="22*"/>
         </Grid.RowDefinitions>
         <local:CoffBar x:Name="Bar"
                        DataContext="{Binding ViewModelBar}"

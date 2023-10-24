@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="900" Width="1200">
     <Grid>
-        <local:CoffMach Height="450" Width="600" x:Name="first"/>
+        <local:CoffMach Height="450" Width="800" x:Name="first"/>
     </Grid>
 </Window>
