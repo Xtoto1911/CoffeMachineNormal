@@ -42,18 +42,18 @@ namespace CoffeMachineNew.Win
 
         private void InitViewModelPath()
         {
-            ViewModelBar.DrinkSrcPath = @"Resources\Drinks.json";
-            ViewModelBar.TopingSrcPath = @"Resources\Topings.json";
+            ViewModelBar.DrinkSrcPath =  @$"Resources\{this.Name}Drinks.json";
+            ViewModelBar.TopingSrcPath = @$"Resources\{this.Name}Topings.json";
         }
 
         private void NewDirectory()
         {
             if (!Directory.Exists(Environment.CurrentDirectory + "/Resources"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + "/Resources");
-            if (!File.Exists(Environment.CurrentDirectory + "/Resources/Drinks.json"))
-                File.Create(Environment.CurrentDirectory + "/Resources/Drinks.json");
-            if (!File.Exists(Environment.CurrentDirectory + "/Resources/Topings.json"))
-                File.Create(Environment.CurrentDirectory + "/Resources/Topings.json");
+            if (!File.Exists(Environment.CurrentDirectory + $"/Resources/{this.Name}Drinks.json"))
+                File.Create(Environment.CurrentDirectory + $"/Resources/{this.Name}Drinks.json");
+            if (!File.Exists(Environment.CurrentDirectory + $"/Resources/{this.Name}Topings.json"))
+                File.Create(Environment.CurrentDirectory + $"/Resources/{this.Name}Topings.json");
         }
 
         private void AdminBtn_Click(object sender, RoutedEventArgs e)
