@@ -75,7 +75,7 @@ namespace CoffeMachineNew.ViewModel
             {
                 topings ??= new();
                 var NewItem = (ListCollectionView)CollectionViewSource.GetDefaultView(topings);
-                NewItem.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtBeginning : NewItemPlaceholderPosition.None;
+                NewItem.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtEnd : NewItemPlaceholderPosition.None;
                 return topings;
             }
         }
@@ -88,7 +88,7 @@ namespace CoffeMachineNew.ViewModel
             {
                 drinks ??= new();
                 var NewItem = (ListCollectionView)CollectionViewSource.GetDefaultView(drinks);
-                NewItem.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtBeginning : NewItemPlaceholderPosition.None;
+                NewItem.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtEnd : NewItemPlaceholderPosition.None;
                 return drinks;
             }
         }
@@ -96,7 +96,7 @@ namespace CoffeMachineNew.ViewModel
         string drinkScrPath = string.Empty;
         public string DrinkSrcPath
         {
-            get { return drinkScrPath; }
+            get => drinkScrPath;
             set
             {
                 if (drinkScrPath != value)
@@ -110,7 +110,7 @@ namespace CoffeMachineNew.ViewModel
         string topingScrPath = string.Empty;
         public string TopingSrcPath
         {
-            get { return topingScrPath; }
+            get => topingScrPath;
             set
             {
                 if (topingScrPath != value)
@@ -118,7 +118,7 @@ namespace CoffeMachineNew.ViewModel
                     topingScrPath = value;
                     Topings = ReductionItems<Topping>.GetItemlist(TopingSrcPath);
                     var topingView = (ListCollectionView)CollectionViewSource.GetDefaultView(Topings);
-                    topingView.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtBeginning : NewItemPlaceholderPosition.None;
+                    topingView.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtEnd : NewItemPlaceholderPosition.None;
                     OnPropertyChanged(nameof(Topings));
                 }
             }

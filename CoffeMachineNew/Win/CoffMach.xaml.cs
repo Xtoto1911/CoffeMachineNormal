@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.XPath;
 
 namespace CoffeMachineNew.Win
 {
@@ -35,25 +36,38 @@ namespace CoffeMachineNew.Win
         public CoffMach()
         {
             DataContext = this;
-            NewDirectory();
-            InitViewModelPath();
             InitializeComponent();
         }
 
+        private string pathName;
+        public string PathName
+        {
+            get => pathName;
+            set
+            {
+                if(pathName != value)
+                {
+                    pathName = value;
+                    NewDirectory();
+                    InitViewModelPath();
+                    OnPropertyChanged(PathName);
+                }
+            }
+        }
         private void InitViewModelPath()
         {
-            ViewModelBar.DrinkSrcPath =  @$"Resources\{this.Name}Drinks.json";
-            ViewModelBar.TopingSrcPath = @$"Resources\{this.Name}Topings.json";
+            ViewModelBar.DrinkSrcPath =  @$"Resources\{PathName}Drinks.json";
+            ViewModelBar.TopingSrcPath = @$"Resources\{PathName}Topings.json";
         }
 
         private void NewDirectory()
         {
             if (!Directory.Exists(Environment.CurrentDirectory + "/Resources"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + "/Resources");
-            if (!File.Exists(Environment.CurrentDirectory + $"/Resources/{this.Name}Drinks.json"))
-                File.Create(Environment.CurrentDirectory + $"/Resources/{this.Name}Drinks.json");
-            if (!File.Exists(Environment.CurrentDirectory + $"/Resources/{this.Name}Topings.json"))
-                File.Create(Environment.CurrentDirectory + $"/Resources/{this.Name}Topings.json");
+            if (!File.Exists(Environment.CurrentDirectory + $"/Resources/{PathName}Drinks.json"))
+                File.Create(Environment.CurrentDirectory + $"/Resources/{PathName}Drinks.json");
+            if (!File.Exists(Environment.CurrentDirectory + $"/Resources/{PathName}Topings.json"))
+                File.Create(Environment.CurrentDirectory + $"/Resources/{PathName}Topings.json");
         }
 
         private void AdminBtn_Click(object sender, RoutedEventArgs e)

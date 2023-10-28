@@ -27,7 +27,7 @@ namespace CoffeMachineNew.Classes
                 if (cnt != value)
                 {
                     cnt = value;
-
+                    OnPropertyChanged(nameof(Count));
                 }
             }
         }
