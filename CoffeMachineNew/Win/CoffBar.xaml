@@ -9,6 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <!--Лист с кофе-->
+        
         <Grid x:Name="MainPanel">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="10*"/>
@@ -22,6 +23,9 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
                       ScrollViewer.VerticalScrollBarVisibility="Disabled"
                       Grid.Column="1">
+                <ListView.Background>
+                    <ImageBrush ImageSource="\Resources\BackList.jpg"/>
+                </ListView.Background>
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Vertical"
@@ -39,7 +43,7 @@
                                        Width="100"
                                        MaxWidth="100"
                                        HorizontalAlignment="Center"
-                                       Margin="2">
+                                       >
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition />
@@ -79,13 +83,16 @@
                 </ListView.ItemTemplateSelector>
             </ListView>
             <Button x:Name="ScrollLeft" 
-            Content="←" 
-            Click="ScrollLeft_Click"  />
+                    Content="←" 
+                    FontSize="60"
+                    Click="ScrollLeft_Click"
+                    Background="LightBlue"/>
             <Button x:Name="ScrollRight" 
-            Content="→" 
-            Click="ScrollRight_Click" 
-            Grid.Column="2" 
-            />
+                    Content="→" 
+                    FontSize="60"
+                    Click="ScrollRight_Click" 
+                    Grid.Column="2" 
+                    Background="LightBlue"/>
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Style.Triggers>
@@ -96,8 +103,11 @@
                 </Style>
             </Grid.Style>
         </Grid>
+        
         <!--Лист с кофе-->
+        
         <!--Панель заполнения кофе-->
+        
         <Grid x:Name="EditPanel"
           Background="LightBlue">
             <Grid.ColumnDefinitions>
@@ -148,10 +158,11 @@
                     <nits:NewItemTemplateSelector>
                         <nits:NewItemTemplateSelector.ItemTemplate>
                             <DataTemplate>
-                                <Grid Width="159">
+                                <Grid Width="220"
+                                      MaxWidth="220">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="90*"/>
+                                        <ColumnDefinition Width="10*"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="{Binding Name}"
                                            TextAlignment="Center"
@@ -175,8 +186,8 @@
                         </nits:NewItemTemplateSelector.ItemTemplate>
                         <nits:NewItemTemplateSelector.NewItemPlaceholderTemplate>
                             <DataTemplate>
-                                <Button Margin="2"
-                                    Width="233"
+                                <Button 
+                                    Width="220"
                                     VerticalAlignment="Stretch"
                                     Command="{Binding DataContext.ShowTopingsToggle, 
                                                       RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Stretch"
@@ -220,8 +231,11 @@
                 </Style>
             </Grid.Style>
         </Grid>
+        
         <!--Лист заполнения кофе-->
+        
         <!--Панель заказа-->
+        
         <Grid x:Name="OrderPanel"
               Background="White">
             <Grid.ColumnDefinitions>
@@ -258,7 +272,7 @@
                         <ColumnDefinition Width="50*"/>
                     </Grid.ColumnDefinitions>
                     <Button Background="LightGreen"
-                            Content="Удалить" 
+                            Content= "{Binding Sum, StringFormat=Заказать {0} р.}"
                             Grid.Column="1" 
                             FontSize="14" 
                             Command="{Binding CreateOrder}"
@@ -403,8 +417,11 @@
                 </Style>
             </Grid.Style>
         </Grid>
+        
         <!--Палель заказа-->
+        
         <!--Панельзаполнения топпингов-->
+        
         <Grid x:Name="ToppingPanel"
               Background="White">
             <Grid.RowDefinitions>
@@ -487,11 +504,11 @@
                                                               RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}"
                                             >
-                                        <TextBlock Text="Удалить"
+                                        <TextBlock Text="-"
                                                     VerticalAlignment="Center"
                                                     HorizontalAlignment="Center"
-                                                    TextAlignment="Justify"
-                                                    FontSize="14"/>
+                                                    TextAlignment="Center"
+                                                    FontSize="20"/>
                                     </Button>
                                     <Button Grid.Row="5"
                                             Grid.ColumnSpan="2"
@@ -500,11 +517,11 @@
                                             Command="{Binding DataContext.AddDrinkToping, 
                                                               RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}">
-                                        <TextBlock Text="Добавить"
+                                        <TextBlock Text="+"
                                                     VerticalAlignment="Center"
                                                     HorizontalAlignment="Center"
-                                                    TextAlignment="Justify"
-                                                    FontSize="14"/>
+                                                    TextAlignment="Center"
+                                                    FontSize="20"/>
                                     </Button>
                                 </Grid>
                             </DataTemplate>
@@ -538,13 +555,74 @@
                 </Style>
             </Grid.Style>
         </Grid>
+        
         <!--Панельзаполнения топпингов-->
-        <!--Зона верстки-->
-
-        <!--Зона верстки-->
+        
+        <!--Прогресс бар-->
+        
+        <Grid x:Name="ProgressView"
+              Background="White">
+            <Grid VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding oProgressMessage,UpdateSourceTrigger=PropertyChanged}"
+                           FontSize="24"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding OrderProgress}" Value="100">
+                                    <Setter Property="Background" Value="LightGreen" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <ProgressBar Grid.Row="1"
+                     Height="20"
+                     Margin="5"
+                     Minimum="0"
+                     Maximum="100"
+                     Value="{Binding OrderProgress}"/>
+            </Grid>
+            <Button Margin="3,422,3,0"
+                    Height="25"
+                    VerticalAlignment="Top"
+                    Command="{Binding DenyOrder}">
+                <TextBlock VerticalAlignment="Bottom"
+                    HorizontalAlignment="Center"
+                    TextAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="Назад"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding OrderProgress}" Value="100">
+                                    <Setter Property="Text" Value="Выход"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Button>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ProgressView}" Value="False">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+        </Grid>
+        
+        <!--Прогресс бар-->
+        
         <!--Всеми нелюбимый штука:)-->
 
-        <!--<Grid x:Name="CheckDell">
+        <Grid x:Name="CheckDell">
             <Grid.Background>
                 <SolidColorBrush Color="White" Opacity="0.6"/>
             </Grid.Background>
@@ -593,7 +671,7 @@
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-        </Grid>-->
+        </Grid>
 
         <!--Всеми нелюбимый штука:)-->
     </Grid>

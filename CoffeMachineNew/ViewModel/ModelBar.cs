@@ -124,15 +124,15 @@ namespace CoffeMachineNew.ViewModel
             }
         }
 
-        int _Wallet;
+        int wallet;
         public int Wallet
         {
-            get { return _Wallet; }
+            get { return wallet; }
             set
             {
-                if (_Wallet != value)
+                if (wallet != value)
                 {
-                    _Wallet = value;
+                    wallet = value;
                     OnPropertyChanged(nameof(Wallet));
                 }
             }
@@ -263,7 +263,7 @@ namespace CoffeMachineNew.ViewModel
         }
         public bool HasTopings
         {
-            get { return DrinkTopings.Count > 0; }
+            get => DrinkTopings.Count > 0;
         }
 
         async void ProgressTic(int prcnt)
@@ -282,7 +282,6 @@ namespace CoffeMachineNew.ViewModel
                 await Task.Delay(100);
             }
             OnPropertyChanged(nameof(DenyOrder));
-            OnOrderEnd();
         }
         #endregion
         #region Заказ
@@ -403,17 +402,15 @@ namespace CoffeMachineNew.ViewModel
             get
             {
                 if (OrderProgress < OrderCreatePercent)
-                    return $"Подготовка... {OrderProgress}%";
+                    return $"Идет подготовка... {OrderProgress}%\n(До начала приготовления есть возможность отмены)";
                 if (OrderProgress == 100)
-                    return "Заберите напиток\nи сдачу";
-                return $"Приготовление... {OrderProgress}%";
+                    return "Заберите напиток и сдачу";
+                return $"Готовим.. {OrderProgress}%";
             }
         }
         public delegate void OrderCreate();
         public event OrderCreate? OnOrderCreate;
         public int OrderCreatePercent { get; set; }
-        public delegate void OrderEnd();
-        public event OrderEnd? OnOrderEnd;
 
         RelayCommand createOrder;
         public RelayCommand CreateOrder
@@ -439,7 +436,7 @@ namespace CoffeMachineNew.ViewModel
                   {
                       OrderProgress = 100;
                       ProgressView = false;
-                  }, obj => (OrderProgress < OrderCreatePercent || OrderProgress == 100) && OnOrderEnd != null);//canExecute
+                  }, obj => OrderProgress < OrderCreatePercent || OrderProgress == 100);//canExecute
             }
         }
         void DrinkSelecting()

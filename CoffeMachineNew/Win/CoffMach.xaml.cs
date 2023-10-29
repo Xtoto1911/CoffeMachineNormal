@@ -1,4 +1,5 @@
 ﻿using CoffeMachineNew.ViewModel;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,16 +28,11 @@ namespace CoffeMachineNew.Win
     {
 
         ModelBar viewModelBar = new ModelBar();
+        Wallet wal = new();
         public ModelBar ViewModelBar
         {
             get => viewModelBar;
             set => viewModelBar = value;
-        }
-
-        public CoffMach()
-        {
-            DataContext = this;
-            InitializeComponent();
         }
 
         private string pathName;
@@ -45,7 +41,7 @@ namespace CoffeMachineNew.Win
             get => pathName;
             set
             {
-                if(pathName != value)
+                if (pathName != value)
                 {
                     pathName = value;
                     NewDirectory();
@@ -54,6 +50,34 @@ namespace CoffeMachineNew.Win
                 }
             }
         }
+
+        public int Wallet
+        {
+            get => viewModelBar.Wallet;
+            set
+            {
+                if (viewModelBar.Wallet != value)
+                {
+                    viewModelBar.Wallet = value;
+                    OnPropertyChanged(nameof(Wallet));
+                }
+            }
+        }
+        public CoffMach()
+        {
+            DataContext = this;
+            ViewModelBar.OnOrderCreate += ViewModelBar_OnOrderCreate;
+            ViewModelBar.OrderCreatePercent = 40;
+            InitializeComponent();
+        }
+
+        private async void ViewModelBar_OnOrderCreate()
+        {
+            ViewModelBar.Done = false;
+            await Task.Delay(200);
+            OnPropertyChanged(nameof(Wallet));
+        }
+
         private void InitViewModelPath()
         {
             ViewModelBar.DrinkSrcPath =  @$"Resources\{PathName}Drinks.json";
@@ -74,6 +98,44 @@ namespace CoffeMachineNew.Win
         {
             ViewModelBar.EditMode = !ViewModelBar.EditMode;
         }
+
+        private async void ChangeBTN_Click(object sender, RoutedEventArgs e)
+        {
+            if (Wallet > 0 && (ViewModelBar.OrderProgress >= 31 || ViewModelBar.OrderProgress == 0))
+            {
+                Wallet = 0;
+                Coin.Visibility = Visibility.Visible;
+                await Task.Delay(2500);
+                Coin.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void MoneyBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (wal != null)
+                wal.Activate();
+            else
+                (wal ??= new()).Closed += WalletDestroy;
+            wal.Show();
+        }
+
+        private void WalletDestroy(object? sender, EventArgs e)
+        {
+            wal = null;
+        }
+
+        private void Terminal_Drop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                string tstring = e.Data.GetData(typeof(string)).ToString();
+                Wallet += Int32.Parse(tstring);
+                OnPropertyChanged(nameof(Wallet));
+            } catch {
+                return;
+            }
+        }
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")
