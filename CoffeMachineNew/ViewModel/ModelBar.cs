@@ -404,7 +404,7 @@ namespace CoffeMachineNew.ViewModel
                 if (OrderProgress < OrderCreatePercent)
                     return $"Идет подготовка... {OrderProgress}%\n(До начала приготовления есть возможность отмены)";
                 if (OrderProgress == 100)
-                    return "Заберите напиток и сдачу";
+                    return "Осторожно, горячо!!!\n Заберите напиток и сдачу";
                 return $"Готовим.. {OrderProgress}%";
             }
         }

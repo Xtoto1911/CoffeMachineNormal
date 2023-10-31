@@ -91,7 +91,7 @@
                 Background="#FF845959">
             <Image x:Name="Cup" 
                    Source="{Binding ImageOrder}"
-                   Opacity="0"/>
+                   Opacity="0" MouseDown="Cup_MouseDown"/>
         </Border>
         <local:CoffBar x:Name="Bar"
                        DataContext="{Binding ViewModelBar}"

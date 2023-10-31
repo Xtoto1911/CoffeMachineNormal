@@ -9,7 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <!--Лист с кофе-->
-        
+
         <Grid x:Name="MainPanel">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="10*"/>
@@ -103,11 +103,11 @@
                 </Style>
             </Grid.Style>
         </Grid>
-        
+
         <!--Лист с кофе-->
-        
+
         <!--Панель заполнения кофе-->
-        
+
         <Grid x:Name="EditPanel"
           Background="LightBlue">
             <Grid.ColumnDefinitions>
@@ -231,13 +231,15 @@
                 </Style>
             </Grid.Style>
         </Grid>
-        
+
         <!--Лист заполнения кофе-->
-        
+
         <!--Панель заказа-->
-        
-        <Grid x:Name="OrderPanel"
-              Background="White">
+
+        <Grid x:Name="OrderPanel">
+            <Grid.Background>
+                <ImageBrush ImageSource="\Resources\BackList.jpg"/>
+            </Grid.Background>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50*"/>
                 <ColumnDefinition Width="50*"/>
@@ -417,19 +419,24 @@
                 </Style>
             </Grid.Style>
         </Grid>
-        
+
         <!--Палель заказа-->
-        
+
         <!--Панельзаполнения топпингов-->
-        
-        <Grid x:Name="ToppingPanel"
-              Background="White">
+
+        <Grid x:Name="ToppingPanel">
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="23*"/>
             </Grid.RowDefinitions>
+            <Grid.Background>
+                <ImageBrush ImageSource="\Resources\BackList.jpg" />
+            </Grid.Background>
             <Button Grid.Row="0"
                     Command="{Binding ShowTopingsToggle}">
+                <Button.Background>
+                    <ImageBrush ImageSource="\Resources\BackList.jpg"/>
+                </Button.Background>
                 <TextBlock Text="Назад"
                            VerticalAlignment="Bottom"
                             HorizontalAlignment="Center"
@@ -439,6 +446,9 @@
                       HorizontalContentAlignment="Stretch"
                       ScrollViewer.HorizontalScrollBarVisibility="Visible" 
                       ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.Row="1">
+                <ListView.Background>
+                    <ImageBrush ImageSource="\Resources\BackList.jpg"/>
+                </ListView.Background>
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Vertical"/>
@@ -555,14 +565,18 @@
                 </Style>
             </Grid.Style>
         </Grid>
-        
+
         <!--Панельзаполнения топпингов-->
-        
+
         <!--Прогресс бар-->
-        
+
         <Grid x:Name="ProgressView"
               Background="White">
-            <Grid VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="407*"/>
+                <RowDefinition Height="43*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
@@ -588,10 +602,8 @@
                      Maximum="100"
                      Value="{Binding OrderProgress}"/>
             </Grid>
-            <Button Margin="3,422,3,0"
-                    Height="25"
-                    VerticalAlignment="Top"
-                    Command="{Binding DenyOrder}">
+            <Button Grid.Column="1"
+                    Command="{Binding DenyOrder}" Grid.Row="1">
                 <TextBlock VerticalAlignment="Bottom"
                     HorizontalAlignment="Center"
                     TextAlignment="Center">
@@ -617,9 +629,9 @@
                 </Style>
             </Grid.Style>
         </Grid>
-        
+
         <!--Прогресс бар-->
-        
+
         <!--Всеми нелюбимый штука:)-->
 
         <Grid x:Name="CheckDell">

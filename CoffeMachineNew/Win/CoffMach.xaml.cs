@@ -133,7 +133,7 @@ namespace CoffeMachineNew.Win
             {
                 Wallet = 0;
                 Coin.Visibility = Visibility.Visible;
-                await Task.Delay(2500);
+                await Task.Delay(2000);
                 Coin.Visibility = Visibility.Hidden;
             }
         }
@@ -164,6 +164,15 @@ namespace CoffeMachineNew.Win
             }
         }
 
+        private void Cup_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (ViewModelBar.OrderProgress == 100)
+            {
+                Cup.BeginAnimation(OpacityProperty, null);
+                ViewModelBar.Done = true;
+                Cup.Opacity = 0;
+            }
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")
