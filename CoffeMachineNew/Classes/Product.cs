@@ -59,8 +59,7 @@ namespace CoffeMachineNew.Classes
 
         public override bool Equals(object? obj)
         {
-            return obj is Product @base &&
-                   ID == @base.ID;
+            return obj is Product @base && ID == @base.ID;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

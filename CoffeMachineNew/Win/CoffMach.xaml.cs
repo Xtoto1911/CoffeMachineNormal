@@ -31,14 +31,14 @@ namespace CoffeMachineNew.Win
     {
 
         ModelBar viewModelBar = new();
-        Wallet wal = new();
+        Wallet wal = new();// кошель
         public ModelBar ViewModelBar
         {
             get => viewModelBar;
             set => viewModelBar = value;
         }
 
-        private string pathName;
+        private string pathName;//имя для названия файлов
         public string PathName
         {
             get => pathName;
@@ -54,7 +54,7 @@ namespace CoffeMachineNew.Win
             }
         }
 
-        public int Wallet
+        public int Wallet// сколько заплатил пользователь
         {
             get => viewModelBar.Wallet;
             set
@@ -67,7 +67,7 @@ namespace CoffeMachineNew.Win
             }
         }
 
-        private string imageOrder;
+        private string imageOrder;// картинка для анимации готового продукта
         public string ImageOrder
         {
             get => imageOrder;
@@ -84,35 +84,36 @@ namespace CoffeMachineNew.Win
         public CoffMach()
         {
             DataContext = this;
-            ViewModelBar.OnOrderCreate += ViewModelBar_OnOrderCreate;
-            ViewModelBar.OrderCreatePercent = 40;
+            ViewModelBar.OnOrderCreate += ViewModelBar_OnOrderCreate;//отдаем делегату что делать при заказе 
+            ViewModelBar.OrderCreatePercent = 30;// на каком проценте будет начало приготовления
             InitializeComponent();
         }
 
         private async void ViewModelBar_OnOrderCreate()
         {
-            ViewModelBar.Done = false;
-            await Task.Delay(200);
-            OnPropertyChanged(nameof(Wallet));
+            ViewModelBar.Done = false;//флаг что еще не приготовлено
+            await Task.Delay(200);//немного ждем
+            OnPropertyChanged(nameof(Wallet));//обновления для отображения сколько денег доступно
             AnimCup();
         }
 
-        private async void AnimCup()
+        private async void AnimCup()// анимация появления чашки
         {
-            ImageOrder = ViewModelBar.SelectedDrink.ImagePath;
-            DoubleAnimation fadeInAnimation = new DoubleAnimation();
+            ImageOrder = ViewModelBar.SelectedDrink.ImagePath;//Путь к картинке из выбранного напитка
+            DoubleAnimation fadeInAnimation = new DoubleAnimation();//объявляем анимацию
+            //диапохон значений
             fadeInAnimation.From = 0;
             fadeInAnimation.To = 1;
-            fadeInAnimation.Duration = new Duration(TimeSpan.FromSeconds(4));
-            Cup.BeginAnimation(OpacityProperty, fadeInAnimation);
+            fadeInAnimation.Duration = new Duration(TimeSpan.FromSeconds(6));//время анимации
+            Cup.BeginAnimation(OpacityProperty, fadeInAnimation);//запуск анимации
         }
         private void InitViewModelPath()
         {
-            ViewModelBar.DrinkSrcPath =  @$"Resources\{PathName}Drinks.json";
+            ViewModelBar.DrinkSrcPath =  @$"Resources\{PathName}Drinks.json";//пути к файлам
             ViewModelBar.TopingSrcPath = @$"Resources\{PathName}Topings.json";
         }
 
-        private void NewDirectory()
+        private void NewDirectory()//создание нужных файлов
         {
             if (!Directory.Exists(Environment.CurrentDirectory + "/Resources"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + "/Resources");
@@ -122,12 +123,12 @@ namespace CoffeMachineNew.Win
                 File.Create(Environment.CurrentDirectory + $"/Resources/{PathName}Topings.json");
         }
 
-        private void AdminBtn_Click(object sender, RoutedEventArgs e)
+        private void AdminBtn_Click(object sender, RoutedEventArgs e)//админ панель
         {
             ViewModelBar.EditMode = !ViewModelBar.EditMode;
         }
 
-        private async void ChangeBTN_Click(object sender, RoutedEventArgs e)
+        private async void ChangeBTN_Click(object sender, RoutedEventArgs e)//выдать сдачу
         {
             if (Wallet > 0 && (ViewModelBar.OrderProgress >= 31 || ViewModelBar.OrderProgress == 0))
             {
@@ -138,12 +139,12 @@ namespace CoffeMachineNew.Win
             }
         }
 
-        private void MoneyBar_MouseDown(object sender, MouseButtonEventArgs e)
+        private void MoneyBar_MouseDown(object sender, MouseButtonEventArgs e)//появление кошелька
         {
             wal.Show();
         }
 
-        private void Terminal_Drop(object sender, DragEventArgs e)
+        private void Terminal_Drop(object sender, DragEventArgs e)//реализация дагдропа
         {
             try
             {
@@ -155,7 +156,7 @@ namespace CoffeMachineNew.Win
             }
         }
 
-        private void Cup_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Cup_MouseDown(object sender, MouseButtonEventArgs e)//забрать напиток
         {
             if (ViewModelBar.OrderProgress == 100)
             {

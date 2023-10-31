@@ -20,6 +20,11 @@ namespace CoffeMachineNew.ViewModel
         #region Вложенный класс для редактирования файлов сохранений
         private static class ReductionItems<T>
         {
+            /// <summary>
+            /// Записать лист в Json
+            /// </summary>
+            /// <param name="items">Коллекция</param>
+            /// <param name="pathJSON">Путь до файла</param>
             public static void ItemsToJSON(Collection<T> items, string pathJSON)
             {
                 StreamWriter file = File.CreateText(pathJSON);
@@ -31,6 +36,11 @@ namespace CoffeMachineNew.ViewModel
                 file.Close();
             }
 
+            /// <summary>
+            /// Считать лист из Json
+            /// </summary>
+            /// <param name="src">путь к файлу</param>
+            /// <returns></returns>
             public static ObservableCollection<T> GetItemlist(string src)
             {
                 string[] lines;
@@ -45,12 +55,23 @@ namespace CoffeMachineNew.ViewModel
                 return items;
             }
 
+            /// <summary>
+            /// Записать айтем в коллекцию
+            /// </summary>
+            /// <param name="item"></param>
+            /// <param name="items"></param>
             public static void AddItemToJSON(T item, Collection<T> items)
             {
                 if (!items.Contains(item))
                     items.Add(item);
             }
 
+             /// <summary>
+             /// Вытащить из коллекции
+             /// </summary>
+             /// <param name="item"></param>
+             /// <param name="items"></param>
+             /// <returns></returns>
             public static T GetItem(T item, Collection<T> items)
             {
                 if (items.Contains(item))
@@ -58,6 +79,12 @@ namespace CoffeMachineNew.ViewModel
                 return default;
             }
 
+            /// <summary>
+            /// Вытащить из коллекции по айди
+            /// </summary>
+            /// <param name="idItem"></param>
+            /// <param name="items"></param>
+            /// <returns></returns>
             public static T GetItem(int idItem, Collection<T> items)
             {
                 foreach (T item in items)
@@ -66,7 +93,287 @@ namespace CoffeMachineNew.ViewModel
             }
         }
         #endregion
-        #region Хранение и получение данных
+        #region Комманды
+        private RelayCommand changeAvatar;//команда смены картинки 
+        public RelayCommand ChangeAvatar
+        {
+            get
+            {
+                return changeAvatar ??=
+                    new RelayCommand(obj =>
+                    {
+                        AvaterPathSelect();
+                    });
+            }
+        }
+
+        private void AvaterPathSelect()
+        {
+            OpenFileDialog file = new OpenFileDialog();
+            file.Filter = "Изображения (*.jpg;*.png)|*.jpg;*.png";
+            file.ShowDialog();
+            if (file.FileName != "" && file.FileName != SelectedDrink.ImagePath)
+                SelectedDrink.ImagePath = file.FileName;
+        }
+
+        private RelayCommand showDrinks;
+        public RelayCommand ShowDrinks// конда для выхода к листу с напитками
+        {
+            get
+            {
+                return showDrinks ??=
+                  new RelayCommand(obj =>
+                  {//что сделает команда
+                      DrinksView = true;
+                      ProgressView = false;
+                      SelectedDrink = null;
+                  }, obj => SelectedDrink != null && SelectedDrink.Name != "");//условие при которых она может быть выполнена
+            }
+        }
+
+        private RelayCommand showTopingsToggle;
+        public RelayCommand ShowTopingsToggle
+        {
+            get
+            {
+                return showTopingsToggle ??=
+                  new RelayCommand(obj =>
+                  {
+                      TopingsView = !TopingsView;
+                      if (!TopingsView)
+                          ReductionItems<Topping>.ItemsToJSON(Topings, TopingSrcPath);
+                  }, obj => SelectedDrink != null && SelectedDrink.Name != "");//canExecute
+            }
+        }
+
+        private RelayCommand upCount;//пользователь увеличивает количество нужного доппинга
+        public RelayCommand UpCount
+        {
+            get
+            {
+                return upCount ??=
+                  new RelayCommand(obj =>
+                  {
+                      (obj as ToppingNode).Count++;
+                      Sum += (obj as ToppingNode).Topping.Price;
+                  }, obj => obj != null && (obj as ToppingNode).Count < (obj as ToppingNode).Topping.MaxCnt);
+            }
+        }
+
+        private RelayCommand downCount;//пользователь уменьшает количество доппинго
+        public RelayCommand DownCount
+        {
+            get
+            {
+                return downCount ??=
+                  new RelayCommand(obj =>
+                  {
+                      (obj as ToppingNode).Count--;
+                      Sum -= (obj as ToppingNode).Topping.Price;
+                      if ((obj as ToppingNode).Count < 1)
+                          SelectedTopings.Remove(obj as ToppingNode);
+                  }, obj => obj != null && (obj as ToppingNode).Count > 0);//canExecute
+            }
+        }
+
+        private RelayCommand addNode;// добавление пользователем доппинга в выбранные
+        public RelayCommand AddNode
+        {
+            get
+            {
+                return addNode ??=
+                  new RelayCommand(obj =>
+                  {
+                      SelectedTopings.Add(new(obj as Topping));
+                      Sum += (obj as Topping).Price;
+                  }, obj =>
+                  {
+                      if (!(obj is Topping toping)) return false;
+                      foreach (ToppingNode node in SelectedTopings)
+                          if (node.Topping == toping)
+                              return false;
+                      return true;
+                  });
+            }
+        }
+
+        private async void ProgressTic(int prcnt)//имитация приготовления
+        {
+            OrderProgress = 0;
+            OnPropertyChanged(nameof(DenyOrder));
+            while (OrderProgress < 100)
+            {
+                OrderProgress++;
+
+                if (OrderProgress == prcnt)
+                {
+                    OnOrderCreate();
+                    Wallet -= Sum;
+                }
+                await Task.Delay(100);
+            }
+            OnPropertyChanged(nameof(DenyOrder));
+        }
+
+        private RelayCommand createOrder;
+        public RelayCommand CreateOrder//Комманда для заказа
+        {
+            get
+            {
+                return createOrder ??=
+                  new RelayCommand(obj =>
+                  {
+                      ProgressView = true;
+                      ProgressTic(OrderCreatePercent);
+                  }, obj => OnOrderCreate != null && Wallet >= Sum && Done);//canExecute
+            }
+        }
+
+        private RelayCommand denyOrder;
+        public RelayCommand DenyOrder//Отменить заказ или если уже приготовлено то выход к листу с напитками
+        {
+            get
+            {
+                return OrderProgress == 100 ? ShowDrinks : denyOrder ??=
+                  new RelayCommand(obj =>
+                  {
+                      OrderProgress = 100;
+                      ProgressView = false;
+                  }, obj => OrderProgress < OrderCreatePercent || OrderProgress == 100);
+            }
+        }
+
+        private RelayCommand addDrink;//Кнопка добавления нового напитка
+        public RelayCommand AddDrink
+        {
+            get
+            {
+                return addDrink ??=
+                  new RelayCommand(obj =>
+                  {
+                      SelectedDrink = new("", 0, "");
+                      Drinks.Add(SelectedDrink);
+                  }, obj => EditMode);
+            }
+        }
+
+        private RelayCommand removeDrink;//кнопка удаления напитка
+        public RelayCommand RemoveDrink
+        {
+            get
+            {
+                return !Removing && !IsChecked ? ConfirmRemove : removeDrink ??=
+                  new RelayCommand(obj =>
+                  {
+                      Drinks.Remove(SelectedDrink);
+                      DrinksView = true;
+                      Removing = false;
+                  }, obj => true);//canExecute
+            }
+        }
+
+        private RelayCommand addToping;// кнопка добавления топпинга в лист со всеми топпингами 
+        public RelayCommand AddToping
+        {
+            get
+            {
+                return addToping ??=
+                  new RelayCommand(obj =>
+                  {
+                      Topings.Add(new("", 0, 0));
+                  }, obj => EditMode);
+            }
+        }
+
+        private RelayCommand removeToping;//удаление топпинга из листа всех топпинго
+        public RelayCommand RemoveToping
+        {
+            get
+            {
+                return !Removing && !IsChecked ? ConfirmRemove : removeToping ??=
+                  new RelayCommand(obj =>
+                  {
+                      Topings.Remove(obj as Topping);
+                      Removing = false;
+                      foreach (Drink drink in Drinks)
+                          drink.Toppings.Remove((obj as Topping).ID);
+                  });
+            }
+        }
+
+        private RelayCommand addDrinkToping;//добавление топпинга в напиток
+        public RelayCommand AddDrinkToping
+        {
+            get
+            {
+                return addDrinkToping ??=
+                  new RelayCommand(obj =>
+                  {
+                      SelectedDrink.Toppings.Add((obj as Topping).ID);
+                      GetDrinkTopings();
+                      TopingsView = false;
+                  }, obj => obj != null && (obj as Topping).Name != "" && !DrinkTopings.Contains(obj as Topping));
+            }
+        }
+
+        private RelayCommand removeDrinkToping;//удаление топпинга из напитков
+        public RelayCommand RemoveDrinkToping
+        {
+            get
+            {
+                return removeDrinkToping ??=
+                  new RelayCommand(obj =>
+                  {
+                      SelectedDrink.Toppings.Remove((int)obj);
+                      GetDrinkTopings();
+                      Removing = false;
+                  });//canExecute
+            }
+        }
+
+        private RelayCommand confirmRemove;
+        public RelayCommand ConfirmRemove//команда для отображения предупреждения
+        {
+            get
+            {
+                return confirmRemove ??=
+                  new RelayCommand(obj =>
+                  {
+                      ConfirmView = true;
+                  }, obj => true);
+            }
+        }
+
+        private RelayCommand removeAnsw;//для того убрать панель предупреждения
+        public RelayCommand RemoveAnsw
+        {
+            get
+            {
+                return removeAnsw ??=
+                  new RelayCommand(obj =>
+                  {
+                      Removing = bool.Parse((string)obj);
+                      ConfirmView = false;
+                  }, obj => true);
+            }
+        }
+
+        #endregion
+        #region Хранение
+        ObservableCollection<Drink> drinks;// коллекция напитков
+        public ObservableCollection<Drink> Drinks
+        {
+            set => drinks = value;
+            get
+            {
+                drinks ??= new();//если коллекция пуста создаем новую
+                var NewItem = (ListCollectionView)CollectionViewSource.GetDefaultView(drinks);
+                NewItem.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtEnd : NewItemPlaceholderPosition.None;//для добавления нового напитка,
+                                                                                                                                   //добавляем образ нового объекта
+                return drinks;
+            }
+        }
+
         ObservableCollection<Topping> topings;
         public ObservableCollection<Topping> Topings
         {
@@ -80,20 +387,7 @@ namespace CoffeMachineNew.ViewModel
             }
         }
 
-        ObservableCollection<Drink> drinks;
-        public ObservableCollection<Drink> Drinks
-        {
-            set => drinks = value;
-            get
-            {
-                drinks ??= new();
-                var NewItem = (ListCollectionView)CollectionViewSource.GetDefaultView(drinks);
-                NewItem.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtEnd : NewItemPlaceholderPosition.None;
-                return drinks;
-            }
-        }
-
-        string drinkScrPath = string.Empty;
+        string drinkScrPath = string.Empty;//путь к джейсонфайлу напитка
         public string DrinkSrcPath
         {
             get => drinkScrPath;
@@ -124,7 +418,7 @@ namespace CoffeMachineNew.ViewModel
             }
         }
 
-        int wallet;
+        int wallet;//сколько денег вложил пользователь
         public int Wallet
         {
             get { return wallet; }
@@ -138,49 +432,28 @@ namespace CoffeMachineNew.ViewModel
             }
         }
 
-        RelayCommand changeAvatar;
-        public RelayCommand ChangeAvatar
-        {
-            get
-            {
-                return changeAvatar ??=
-                    new RelayCommand(obj =>
-                    {
-                        AvaterPathSelect();
-                    });
-            }
-        }
+        public bool Done = true;// flag Готовность заказа
 
-        public bool Done = true;
-
-        void AvaterPathSelect()
-        {
-            OpenFileDialog file = new OpenFileDialog();
-            file.Filter = "Изображения (*.jpg;*.png)|*.jpg;*.png";
-            file.ShowDialog();
-            if (file.FileName != "" && file.FileName != SelectedDrink.ImagePath)
-                SelectedDrink.ImagePath = file.FileName;
-        }
         #endregion
         #region Настройки отображения
-        bool _EditMode;
-        public bool EditMode //Режим редактирования
+        private bool editMode;
+        public bool EditMode //флаг для админ режима
         {
-            get { return _EditMode; }
+            get { return editMode; }
             set
             {
-                if (_EditMode != value)
+                if (editMode != value)
                 {
-                    _EditMode = value;
+                    editMode = value;
                     OnPropertyChanged(nameof(EditMode));
                     OnPropertyChanged(nameof(Drinks));
                     OnPropertyChanged(nameof(Topings));
                 }
             }
         }
-
-        bool confirmView;
-        public bool ConfirmView
+        
+        private bool confirmView;
+        public bool ConfirmView// флаг для отображения оповещения об удалении
         {
             get { return confirmView; }
             set
@@ -192,8 +465,9 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
-        bool drinksView = true;
-        public bool DrinksView
+
+        private bool drinksView = true;
+        public bool DrinksView// флаг для панели отображения листа с напитками
         {
             get { return drinksView; }
             set
@@ -205,8 +479,9 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
-        bool topingsView;
-        public bool TopingsView
+
+        private bool topingsView;
+        public bool TopingsView// флаг для отображения листа с доппингами
         {
             get { return topingsView; }
             set
@@ -219,8 +494,9 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
-        bool progressView;
-        public bool ProgressView
+
+        private bool progressView;
+        public bool ProgressView// для отображения панели с прогрессбаром
         {
             get { return progressView; }
             set
@@ -232,60 +508,49 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
-        RelayCommand showDrinks;
-        public RelayCommand ShowDrinks
-        {
-            get
-            {
-                return showDrinks ??=
-                  new RelayCommand(obj =>
-                  {
-                      DrinksView = true;
-                      ProgressView = false;
-                      SelectedDrink = null;
-                  }, obj => SelectedDrink != null && SelectedDrink.Name != "");
-            }
-        }
 
-        RelayCommand showTopingsToggle;
-        public RelayCommand ShowTopingsToggle
-        {
-            get
-            {
-                return showTopingsToggle ??=
-                  new RelayCommand(obj =>
-                  {
-                      TopingsView = !TopingsView;
-                      if (!TopingsView)
-                          ReductionItems<Topping>.ItemsToJSON(Topings, TopingSrcPath);
-                  }, obj => SelectedDrink != null && SelectedDrink.Name != "");//canExecute
-            }
-        }
-        public bool HasTopings
+        public bool HasToppings//добавить ли выбранный пользователем топпинг
         {
             get => DrinkTopings.Count > 0;
         }
 
-        async void ProgressTic(int prcnt)
-        {
-            OrderProgress = 0;
-            OnPropertyChanged(nameof(DenyOrder));
-            while (OrderProgress < 100)
-            {
-                OrderProgress++;
-
-                if (OrderProgress == prcnt)
-                {
-                    OnOrderCreate();
-                    Wallet -= Sum;
-                }
-                await Task.Delay(100);
-            }
-            OnPropertyChanged(nameof(DenyOrder));
-        }
         #endregion
-        #region Заказ
-        Drink selectedDrink;
+        #region Для панели заказа
+
+        private ObservableCollection<Topping> drinkTopings;//Доступные пользователю доппинги
+        public ObservableCollection<Topping> DrinkTopings
+        {
+            get => drinkTopings ??= new();
+            set => drinkTopings = value;
+        }
+
+        private ObservableCollection<ToppingNode> selectedTopings;//Выбранные пользователем доппинги
+        public ObservableCollection<ToppingNode> SelectedTopings
+        {
+            get => selectedTopings ??= new();
+            set => selectedTopings = value;
+        }
+
+        private void GetDrinkTopings()
+        {
+            DrinkTopings = new();//Сохдаем новый лист доступные для пользователя топпинги
+            foreach (int id in SelectedDrink.Toppings)//записываем в доступные из выбранных по айди
+                ReductionItems<Topping>.AddItemToJSON(ReductionItems<Topping>.GetItem(id, Topings), DrinkTopings);
+            //если активирован режим админа то добавляет в конец кнопки для добавления
+            var topingView = (ListCollectionView)CollectionViewSource.GetDefaultView(DrinkTopings);
+            topingView.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtBeginning : NewItemPlaceholderPosition.None;
+            OnPropertyChanged(nameof(DrinkTopings));
+            OnPropertyChanged(nameof(HasToppings));
+        }
+
+        private void DrinkSelecting()
+        {
+            DrinksView = false;
+            Sum = SelectedDrink.Price;
+            GetDrinkTopings();
+        }
+
+        private Drink selectedDrink;//Выбранный напиток
         public Drink SelectedDrink
         {
             get { return selectedDrink; }
@@ -305,73 +570,10 @@ namespace CoffeMachineNew.ViewModel
                     }
                 }
             }
-        } // Выбраный напиток
-        ObservableCollection<Topping> drinkTopings;
-        public ObservableCollection<Topping> DrinkTopings
-        {
-            get => drinkTopings ??= new();
-            set => drinkTopings = value;
-        } // Доступные топинги
-        ObservableCollection<ToppingNode> selectedTopings;
-        public ObservableCollection<ToppingNode> SelectedTopings
-        {
-            get => selectedTopings ??= new();
-            set => selectedTopings = value;
-        } // ВЫбраные топинги
-        #region Команды топингов
-        RelayCommand upCount;
-        public RelayCommand UpCount
-        {
-            get
-            {
-                return upCount ??=
-                  new RelayCommand(obj =>
-                  {
-                      (obj as ToppingNode).Count++;
-                      Sum += (obj as ToppingNode).Topping.Price;
-                  }, obj => obj != null && (obj as ToppingNode).Count < (obj as ToppingNode).Topping.MaxCnt);//canExecute
-            }
         }
 
-        RelayCommand downCount;
-        public RelayCommand DownCount
-        {
-            get
-            {
-                return downCount ??=
-                  new RelayCommand(obj =>
-                  {
-                      (obj as ToppingNode).Count--;
-                      Sum -= (obj as ToppingNode).Topping.Price;
-                      if ((obj as ToppingNode).Count < 1)
-                          SelectedTopings.Remove(obj as ToppingNode);
-                  }, obj => obj != null && (obj as ToppingNode).Count > 0);//canExecute
-            }
-        }
-
-        RelayCommand addNode;
-        public RelayCommand AddNode
-        {
-            get
-            {
-                return addNode ??=
-                  new RelayCommand(obj =>
-                  {
-                      SelectedTopings.Add(new(obj as Topping));
-                      Sum += (obj as Topping).Price;
-                  }, obj =>
-                  {
-                      if (!(obj is Topping toping)) return false;
-                      foreach (ToppingNode node in SelectedTopings)
-                          if (node.Topping == toping)
-                              return false;
-                      return true;
-                  });
-            }
-        }
-        #endregion
         int sum; 
-        public int Sum
+        public int Sum//сумма заказа
         {
             get { return sum; }
             set
@@ -383,8 +585,9 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
+
         int orderProgress;
-        public int OrderProgress
+        public int OrderProgress//процент прогресса
         {
             get { return orderProgress; }
             set
@@ -397,6 +600,7 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
+
         public string oProgressMessage
         {
             get
@@ -408,139 +612,14 @@ namespace CoffeMachineNew.ViewModel
                 return $"Готовим.. {OrderProgress}%";
             }
         }
-        public delegate void OrderCreate();
+        public delegate void OrderCreate();//делигат для метода что будет при начале приготовления
         public event OrderCreate? OnOrderCreate;
-        public int OrderCreatePercent { get; set; }
+        public int OrderCreatePercent { get; set; }//когда каком проценте начинается приготовление
 
-        RelayCommand createOrder;
-        public RelayCommand CreateOrder
-        {
-            get
-            {
-                return createOrder ??=
-                  new RelayCommand(obj =>
-                  {
-                      ProgressView = true;
-                      ProgressTic(OrderCreatePercent);
-                  }, obj => OnOrderCreate != null && Wallet >= Sum && Done);//canExecute
-            }
-        }
-
-        RelayCommand denyOrder;
-        public RelayCommand DenyOrder
-        {
-            get
-            {
-                return OrderProgress == 100 ? ShowDrinks : denyOrder ??=
-                  new RelayCommand(obj =>
-                  {
-                      OrderProgress = 100;
-                      ProgressView = false;
-                  }, obj => OrderProgress < OrderCreatePercent || OrderProgress == 100);//canExecute
-            }
-        }
-        void DrinkSelecting()
-        {
-            DrinksView = false;
-            Sum = SelectedDrink.Price;
-            GetDrinkTopings();
-        }
-        void GetDrinkTopings()
-        {
-            DrinkTopings = new();
-            foreach (int id in SelectedDrink.Toppings)
-                ReductionItems<Topping>.AddItemToJSON(ReductionItems<Topping>.GetItem(id, Topings), DrinkTopings);
-            var topingView = (ListCollectionView)CollectionViewSource.GetDefaultView(DrinkTopings);
-            topingView.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtBeginning : NewItemPlaceholderPosition.None;
-            OnPropertyChanged(nameof(DrinkTopings));
-            OnPropertyChanged(nameof(HasTopings));
-        }
         #endregion
         #region Редактирование
-        RelayCommand addDrink;
-        public RelayCommand AddDrink
-        {
-            get
-            {
-                return addDrink ??=
-                  new RelayCommand(obj =>
-                  {
-                      SelectedDrink = new("", 0, "");
-                      Drinks.Add(SelectedDrink);
-                  }, obj => EditMode);//canExecute
-            }
-        }
-        RelayCommand removeDrink;
-        public RelayCommand RemoveDrink
-        {
-            get
-            {
-                return !Removing && !IsChecked ? ConfirmRemove : removeDrink ??=
-                  new RelayCommand(obj =>
-                  {
-                      Drinks.Remove(SelectedDrink);
-                      DrinksView = true;
-                      Removing = false;
-                  }, obj => true);//canExecute
-            }
-        }
-        RelayCommand addToping;
-        public RelayCommand AddToping
-        {
-            get
-            {
-                return addToping ??=
-                  new RelayCommand(obj =>
-                  {
-                      Topings.Add(new("", 0, 0));
-                  }, obj => EditMode);//canExecute
-            }
-        }
-        RelayCommand removeToping;
-        public RelayCommand RemoveToping
-        {
-            get
-            {
-                return !Removing && !IsChecked ? ConfirmRemove : removeToping ??=
-                  new RelayCommand(obj =>
-                  {
-                      Topings.Remove(obj as Topping);
-                      Removing = false;
-                      foreach (Drink drink in Drinks)
-                          drink.Toppings.Remove((obj as Topping).ID);
-                  });
-            }
-        }
-        RelayCommand addDrinkToping;
-        public RelayCommand AddDrinkToping
-        {
-            get
-            {
-                return addDrinkToping ??=
-                  new RelayCommand(obj =>
-                  {
-                      SelectedDrink.Toppings.Add((obj as Topping).ID);
-                      GetDrinkTopings();
-                      TopingsView = false;
-                  }, obj => obj != null && (obj as Topping).Name != "" && !DrinkTopings.Contains(obj as Topping));//canExecute
-            }
-        }
-        RelayCommand removeDrinkToping;
-        public RelayCommand RemoveDrinkToping
-        {
-            get
-            {
-                return removeDrinkToping ??=
-                  new RelayCommand(obj =>
-                  {
-                      SelectedDrink.Toppings.Remove((int)obj);
-                      GetDrinkTopings();
-                      Removing = false;
-                  });//canExecute
-            }
-        }
 
-        bool removing;
+        private bool removing;// влаг для возможность удаления
         bool Removing
         {
             get { return removing; }
@@ -557,34 +636,9 @@ namespace CoffeMachineNew.ViewModel
             }
         }
 
-        RelayCommand confirmRemove;
-        public RelayCommand ConfirmRemove
-        {
-            get
-            {
-                return confirmRemove ??=
-                  new RelayCommand(obj =>
-                  {
-                      ConfirmView = true;
-                  }, obj => true);//canExecute
-            }
-        }
+        
 
-        RelayCommand removeAnsw;
-        public RelayCommand RemoveAnsw
-        {
-            get
-            {
-                return removeAnsw ??=
-                  new RelayCommand(obj =>
-                  {
-                      Removing = bool.Parse((string)obj);
-                      ConfirmView = false;
-                  }, obj => true);//canExecute
-            }
-        }
-
-        private bool isChecked;
+        private bool isChecked;//для запоминания чек докса чтобы не повторять вывод предупреждения
         public bool IsChecked
         {
             get { return isChecked; }

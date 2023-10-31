@@ -9,8 +9,8 @@ namespace CoffeMachineNew.Classes
 {
     public class Drink : Product
     {
-        private string imagePath;
-        public ObservableCollection<int> Toppings { get; set; }
+        private string imagePath;//ссылка на картинку
+        public ObservableCollection<int> Toppings { get; set; }//индексы топингов
         public Drink(string name, int price, string imagePath) : base(name, price)
         {
             ImagePath = imagePath;
@@ -30,7 +30,7 @@ namespace CoffeMachineNew.Classes
                 if (imagePath != value)
                 {
                     imagePath = value;
-                    OnPropertyChanged(nameof(ImagePath));
+                    OnPropertyChanged(nameof(ImagePath));//говорим обновиться подписанным объектам
                 }
             }
         }
