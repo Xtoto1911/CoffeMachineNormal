@@ -32,8 +32,8 @@ namespace CoffeMachineNew.Win
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = true;
-            Visibility = Visibility.Hidden;
+            e.Cancel = true;//пропускаем закрытие
+            Visibility = Visibility.Hidden;//скрываем окно
         }
     }
 }

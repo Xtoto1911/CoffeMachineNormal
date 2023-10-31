@@ -9,13 +9,13 @@ namespace CoffeMachineNew.Classes
 {
     public class RelayCommand : ICommand
     {
-        private readonly Action<object> execute;
-        private readonly Func<object, bool> canExecute;
+        private readonly Action<object> execute;// Делегат для выполнения команды
+        private readonly Func<object, bool> canExecute;// Делегат для определения возможности выполнения команды
 
-        public event EventHandler CanExecuteChanged
+        public event EventHandler CanExecuteChanged// Событие, которое происходит при изменении возможности выполнения команды
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            add { CommandManager.RequerySuggested += value; }// Подписка на событие CommandManager.RequerySuggested
+            remove { CommandManager.RequerySuggested -= value; } // Отписка от события CommandManager.RequerySuggested
         }
 
         public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
@@ -24,12 +24,12 @@ namespace CoffeMachineNew.Classes
             this.canExecute = canExecute;
         }
 
-        public bool CanExecute(object parameter)
+        public bool CanExecute(object parameter)//определяет можно ли выполнить команду
         {
             return canExecute == null || canExecute(parameter);
         }
 
-        public void Execute(object parameter)
+        public void Execute(object parameter)//выполняет команду
         {
             this.execute(parameter);
         }

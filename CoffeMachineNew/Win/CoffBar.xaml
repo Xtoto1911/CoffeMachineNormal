@@ -397,7 +397,7 @@
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasTopings}" Value="False">
+                            <DataTrigger Binding="{Binding HasToppings}" Value="False">
                                 <Setter Property="Visibility" Value="Hidden"/>
                             </DataTrigger>
                         </Style.Triggers>

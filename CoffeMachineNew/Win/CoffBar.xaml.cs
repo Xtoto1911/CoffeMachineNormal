@@ -43,7 +43,7 @@ namespace CoffeMachineNew.Win
             }
         }
 
-        private ScrollViewer GetScrollViewer(DependencyObject depObj)//поиск ScrollViewer 
+        private ScrollViewer GetScrollViewer(DependencyObject depObj)//поиск рекурсивно бежим в поисках скрола 
         {
             if (depObj is ScrollViewer scrollViewer)
             {
