@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,10 +15,12 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.XPath;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CoffeMachineNew.Win
 {
@@ -27,7 +30,7 @@ namespace CoffeMachineNew.Win
     public partial class CoffMach : UserControl, INotifyPropertyChanged
     {
 
-        ModelBar viewModelBar = new ModelBar();
+        ModelBar viewModelBar = new();
         Wallet wal = new();
         public ModelBar ViewModelBar
         {
@@ -63,6 +66,21 @@ namespace CoffeMachineNew.Win
                 }
             }
         }
+
+        private string imageOrder;
+        public string ImageOrder
+        {
+            get => imageOrder;
+            set
+            {
+                if (imageOrder != value)
+                {
+                    imageOrder = value;
+                    OnPropertyChanged(nameof(ImageOrder));
+                }
+            }
+        }
+
         public CoffMach()
         {
             DataContext = this;
@@ -76,8 +94,18 @@ namespace CoffeMachineNew.Win
             ViewModelBar.Done = false;
             await Task.Delay(200);
             OnPropertyChanged(nameof(Wallet));
+            AnimCup();
         }
 
+        private async void AnimCup()
+        {
+            ImageOrder = ViewModelBar.SelectedDrink.ImagePath;
+            DoubleAnimation fadeInAnimation = new DoubleAnimation();
+            fadeInAnimation.From = 0;
+            fadeInAnimation.To = 1;
+            fadeInAnimation.Duration = new Duration(TimeSpan.FromSeconds(4));
+            Cup.BeginAnimation(OpacityProperty, fadeInAnimation);
+        }
         private void InitViewModelPath()
         {
             ViewModelBar.DrinkSrcPath =  @$"Resources\{PathName}Drinks.json";

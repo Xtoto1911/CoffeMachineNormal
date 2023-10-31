@@ -71,9 +71,9 @@
                    Drop="Terminal_Drop"
                    
                    >
-                
+
             </Label>
-            <Border BorderBrush="LightSlateGray"
+            <Border BorderBrush="Black"
                     Background="White"
                     BorderThickness="3" 
                     Grid.Column="2">
@@ -84,15 +84,24 @@
                        />
             </Border>
         </Grid>
-
+        <Border BorderBrush="Black"
+                BorderThickness="5"
+                Grid.Row="1"
+                Grid.Column="1" 
+                Background="#FF845959">
+            <Image x:Name="Cup" 
+                   Source="{Binding ImageOrder}"
+                   Opacity="0"/>
+        </Border>
         <local:CoffBar x:Name="Bar"
                        DataContext="{Binding ViewModelBar}"
-                 Grid.Row="0" 
-                 Grid.Column="1" Grid.ColumnSpan="2"/>
+                       Grid.Row="0" 
+                       Grid.Column="1" Grid.ColumnSpan="2"/>
         <Button x:Name="AdminBtn" 
-            Height="20" 
-            Width="20" 
-            HorizontalAlignment="Right" 
-            Click="AdminBtn_Click" VerticalAlignment="Top" Grid.Column="3"/>
+                Height="20" 
+                Width="20" 
+                HorizontalAlignment="Right" 
+                Click="AdminBtn_Click" 
+                VerticalAlignment="Top" Grid.Column="3"/>
     </Grid>
 </UserControl>
