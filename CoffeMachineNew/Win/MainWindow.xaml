@@ -5,8 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CoffeMachineNew.Win"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1200">
+        Title="MainWindow" Height="800" Width="1650" ResizeMode="CanMinimize" Closing="Window_Closing">
     <Grid>
-        <local:CoffMach Height="450" Width="600"/>
+        <local:CoffMach Height="450" 
+                        Width="800" 
+                        HorizontalAlignment="Left" 
+                        PathName="first"
+                        />
+        <local:CoffMach Height="450" 
+                        Width="800" 
+                        HorizontalAlignment="Right" 
+                        PathName="second"/>
     </Grid>
 </Window>

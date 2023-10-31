@@ -45,7 +45,7 @@ namespace CoffeMachineNew.ViewModel
                 return items;
             }
 
-            public static void AddItemToJSON(Collection<T> items, T item)
+            public static void AddItemToJSON(T item, Collection<T> items)
             {
                 if (!items.Contains(item))
                     items.Add(item);
@@ -70,32 +70,33 @@ namespace CoffeMachineNew.ViewModel
         ObservableCollection<Topping> topings;
         public ObservableCollection<Topping> Topings
         {
+            set => topings = value;
             get
             {
                 topings ??= new();
                 var NewItem = (ListCollectionView)CollectionViewSource.GetDefaultView(topings);
-                NewItem.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtBeginning : NewItemPlaceholderPosition.None;
+                NewItem.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtEnd : NewItemPlaceholderPosition.None;
                 return topings;
             }
-            set => topings = value;
         }
+
         ObservableCollection<Drink> drinks;
         public ObservableCollection<Drink> Drinks
         {
+            set => drinks = value;
             get
             {
                 drinks ??= new();
                 var NewItem = (ListCollectionView)CollectionViewSource.GetDefaultView(drinks);
-                NewItem.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtBeginning : NewItemPlaceholderPosition.None;
+                NewItem.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtEnd : NewItemPlaceholderPosition.None;
                 return drinks;
             }
-            set => drinks = value;
         }
 
         string drinkScrPath = string.Empty;
         public string DrinkSrcPath
         {
-            get { return drinkScrPath; }
+            get => drinkScrPath;
             set
             {
                 if (drinkScrPath != value)
@@ -105,10 +106,11 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
+
         string topingScrPath = string.Empty;
         public string TopingSrcPath
         {
-            get { return topingScrPath; }
+            get => topingScrPath;
             set
             {
                 if (topingScrPath != value)
@@ -116,20 +118,21 @@ namespace CoffeMachineNew.ViewModel
                     topingScrPath = value;
                     Topings = ReductionItems<Topping>.GetItemlist(TopingSrcPath);
                     var topingView = (ListCollectionView)CollectionViewSource.GetDefaultView(Topings);
-                    topingView.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtBeginning : NewItemPlaceholderPosition.None;
+                    topingView.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtEnd : NewItemPlaceholderPosition.None;
                     OnPropertyChanged(nameof(Topings));
                 }
             }
         }
-        int _Wallet;
+
+        int wallet;
         public int Wallet
         {
-            get { return _Wallet; }
+            get { return wallet; }
             set
             {
-                if (_Wallet != value)
+                if (wallet != value)
                 {
-                    _Wallet = value;
+                    wallet = value;
                     OnPropertyChanged(nameof(Wallet));
                 }
             }
@@ -147,32 +150,50 @@ namespace CoffeMachineNew.ViewModel
                     });
             }
         }
+
+        public bool Done = true;
+
         void AvaterPathSelect()
         {
             OpenFileDialog file = new OpenFileDialog();
+            file.Filter = "Изображения (*.jpg;*.png)|*.jpg;*.png";
             file.ShowDialog();
             if (file.FileName != "" && file.FileName != SelectedDrink.ImagePath)
                 SelectedDrink.ImagePath = file.FileName;
         }
         #endregion
         #region Настройки отображения
-        bool editMode = false;
-        public bool EditMode //AdminPanel
+        bool _EditMode;
+        public bool EditMode //Режим редактирования
         {
-            get { return editMode; }
+            get { return _EditMode; }
             set
             {
-                if (editMode != value)
+                if (_EditMode != value)
                 {
-                    editMode = value;
+                    _EditMode = value;
                     OnPropertyChanged(nameof(EditMode));
                     OnPropertyChanged(nameof(Drinks));
                     OnPropertyChanged(nameof(Topings));
                 }
             }
         }
+
+        bool confirmView;
+        public bool ConfirmView
+        {
+            get { return confirmView; }
+            set
+            {
+                if (confirmView != value)
+                {
+                    confirmView = value;
+                    OnPropertyChanged(nameof(ConfirmView));
+                }
+            }
+        }
         bool drinksView = true;
-        public bool DrinksView//MainPanel
+        public bool DrinksView
         {
             get { return drinksView; }
             set
@@ -181,34 +202,36 @@ namespace CoffeMachineNew.ViewModel
                 {
                     drinksView = value;
                     OnPropertyChanged(nameof(DrinksView));
-                    OnPropertyChanged(nameof(OrderSetup));
-                    OnPropertyChanged(nameof(DrinkEdit));
                 }
             }
         }
-        bool topingView = false;
-        public bool TopingView
+        bool topingsView;
+        public bool TopingsView
         {
-            get { return topingView; }
+            get { return topingsView; }
             set
             {
-                if (topingView != value)
+                if (topingsView != value)
                 {
-                    topingView = value;
-                    OnPropertyChanged(nameof(TopingView));
+                    topingsView = value;
+                    OnPropertyChanged(nameof(TopingsView));
                     ReductionItems<Topping>.ItemsToJSON(Topings, TopingSrcPath);
                 }
             }
         }
-        public bool OrderSetup//OrderPanel
+        bool progressView;
+        public bool ProgressView
         {
-            get { return !editMode && !drinksView; }
+            get { return progressView; }
+            set
+            {
+                if (progressView != value)
+                {
+                    progressView = value;
+                    OnPropertyChanged(nameof(ProgressView));
+                }
+            }
         }
-        public bool DrinkEdit//isEditInterectionPanel
-        {
-            get { return editMode && !drinksView; }
-        }
-
         RelayCommand showDrinks;
         public RelayCommand ShowDrinks
         {
@@ -218,6 +241,7 @@ namespace CoffeMachineNew.ViewModel
                   new RelayCommand(obj =>
                   {
                       DrinksView = true;
+                      ProgressView = false;
                       SelectedDrink = null;
                   }, obj => SelectedDrink != null && SelectedDrink.Name != "");
             }
@@ -231,11 +255,33 @@ namespace CoffeMachineNew.ViewModel
                 return showTopingsToggle ??=
                   new RelayCommand(obj =>
                   {
-                      TopingView = !TopingView;
-                      if (!TopingView)
+                      TopingsView = !TopingsView;
+                      if (!TopingsView)
                           ReductionItems<Topping>.ItemsToJSON(Topings, TopingSrcPath);
                   }, obj => SelectedDrink != null && SelectedDrink.Name != "");//canExecute
             }
+        }
+        public bool HasTopings
+        {
+            get => DrinkTopings.Count > 0;
+        }
+
+        async void ProgressTic(int prcnt)
+        {
+            OrderProgress = 0;
+            OnPropertyChanged(nameof(DenyOrder));
+            while (OrderProgress < 100)
+            {
+                OrderProgress++;
+
+                if (OrderProgress == prcnt)
+                {
+                    OnOrderCreate();
+                    Wallet -= Sum;
+                }
+                await Task.Delay(100);
+            }
+            OnPropertyChanged(nameof(DenyOrder));
         }
         #endregion
         #region Заказ
@@ -288,7 +334,7 @@ namespace CoffeMachineNew.ViewModel
         }
 
         RelayCommand downCount;
-        public RelayCommand DeCount
+        public RelayCommand DownCount
         {
             get
             {
@@ -309,7 +355,7 @@ namespace CoffeMachineNew.ViewModel
             get
             {
                 return addNode ??=
-                new RelayCommand(obj =>
+                  new RelayCommand(obj =>
                   {
                       SelectedTopings.Add(new(obj as Topping));
                       Sum += (obj as Topping).Price;
@@ -324,7 +370,7 @@ namespace CoffeMachineNew.ViewModel
             }
         }
         #endregion
-        int sum; // Сумма заказа
+        int sum; 
         public int Sum
         {
             get { return sum; }
@@ -337,17 +383,62 @@ namespace CoffeMachineNew.ViewModel
                 }
             }
         }
-
-        
+        int orderProgress;
+        public int OrderProgress
+        {
+            get { return orderProgress; }
+            set
+            {
+                if (orderProgress != value)
+                {
+                    orderProgress = value;
+                    OnPropertyChanged(nameof(OrderProgress));
+                    OnPropertyChanged(nameof(oProgressMessage));
+                }
+            }
+        }
+        public string oProgressMessage
+        {
+            get
+            {
+                if (OrderProgress < OrderCreatePercent)
+                    return $"Идет подготовка... {OrderProgress}%\n(До начала приготовления есть возможность отмены)";
+                if (OrderProgress == 100)
+                    return "Осторожно, горячо!!!\n Заберите напиток и сдачу";
+                return $"Готовим.. {OrderProgress}%";
+            }
+        }
         public delegate void OrderCreate();
         public event OrderCreate? OnOrderCreate;
         public int OrderCreatePercent { get; set; }
-        public delegate void OrderEnd();
-        public event OrderEnd? OnOrderEnd;
 
-        
+        RelayCommand createOrder;
+        public RelayCommand CreateOrder
+        {
+            get
+            {
+                return createOrder ??=
+                  new RelayCommand(obj =>
+                  {
+                      ProgressView = true;
+                      ProgressTic(OrderCreatePercent);
+                  }, obj => OnOrderCreate != null && Wallet >= Sum && Done);//canExecute
+            }
+        }
 
-        
+        RelayCommand denyOrder;
+        public RelayCommand DenyOrder
+        {
+            get
+            {
+                return OrderProgress == 100 ? ShowDrinks : denyOrder ??=
+                  new RelayCommand(obj =>
+                  {
+                      OrderProgress = 100;
+                      ProgressView = false;
+                  }, obj => OrderProgress < OrderCreatePercent || OrderProgress == 100);//canExecute
+            }
+        }
         void DrinkSelecting()
         {
             DrinksView = false;
@@ -358,10 +449,11 @@ namespace CoffeMachineNew.ViewModel
         {
             DrinkTopings = new();
             foreach (int id in SelectedDrink.Toppings)
-                ReductionItems<Topping>.AddItemToJSON(DrinkTopings, ReductionItems<Topping>.GetItem(id, Topings));
+                ReductionItems<Topping>.AddItemToJSON(ReductionItems<Topping>.GetItem(id, Topings), DrinkTopings);
             var topingView = (ListCollectionView)CollectionViewSource.GetDefaultView(DrinkTopings);
             topingView.NewItemPlaceholderPosition = EditMode ? NewItemPlaceholderPosition.AtBeginning : NewItemPlaceholderPosition.None;
             OnPropertyChanged(nameof(DrinkTopings));
+            OnPropertyChanged(nameof(HasTopings));
         }
         #endregion
         #region Редактирование
@@ -373,7 +465,7 @@ namespace CoffeMachineNew.ViewModel
                 return addDrink ??=
                   new RelayCommand(obj =>
                   {
-                      SelectedDrink = new("",0,"");
+                      SelectedDrink = new("", 0, "");
                       Drinks.Add(SelectedDrink);
                   }, obj => EditMode);//canExecute
             }
@@ -383,11 +475,12 @@ namespace CoffeMachineNew.ViewModel
         {
             get
             {
-                return removeDrink ??=
+                return !Removing && !IsChecked ? ConfirmRemove : removeDrink ??=
                   new RelayCommand(obj =>
                   {
                       Drinks.Remove(SelectedDrink);
                       DrinksView = true;
+                      Removing = false;
                   }, obj => true);//canExecute
             }
         }
@@ -399,7 +492,7 @@ namespace CoffeMachineNew.ViewModel
                 return addToping ??=
                   new RelayCommand(obj =>
                   {
-                      Topings.Add(new("",0,0));
+                      Topings.Add(new("", 0, 0));
                   }, obj => EditMode);//canExecute
             }
         }
@@ -408,11 +501,14 @@ namespace CoffeMachineNew.ViewModel
         {
             get
             {
-                return removeToping ??=
-                new RelayCommand(obj =>
+                return !Removing && !IsChecked ? ConfirmRemove : removeToping ??=
+                  new RelayCommand(obj =>
                   {
-                      Topings.Remove((obj as Topping));
-                  });//canExecute
+                      Topings.Remove(obj as Topping);
+                      Removing = false;
+                      foreach (Drink drink in Drinks)
+                          drink.Toppings.Remove((obj as Topping).ID);
+                  });
             }
         }
         RelayCommand addDrinkToping;
@@ -421,11 +517,11 @@ namespace CoffeMachineNew.ViewModel
             get
             {
                 return addDrinkToping ??=
-                new RelayCommand(obj =>
-                {
+                  new RelayCommand(obj =>
+                  {
                       SelectedDrink.Toppings.Add((obj as Topping).ID);
                       GetDrinkTopings();
-                    TopingView = false;
+                      TopingsView = false;
                   }, obj => obj != null && (obj as Topping).Name != "" && !DrinkTopings.Contains(obj as Topping));//canExecute
             }
         }
@@ -439,7 +535,66 @@ namespace CoffeMachineNew.ViewModel
                   {
                       SelectedDrink.Toppings.Remove((int)obj);
                       GetDrinkTopings();
+                      Removing = false;
                   });//canExecute
+            }
+        }
+
+        bool removing;
+        bool Removing
+        {
+            get { return removing; }
+            set
+            {
+                if (removing != value)
+                {
+                    removing = value;
+                    OnPropertyChanged(nameof(Removing));
+                    OnPropertyChanged(nameof(RemoveDrink));
+                    OnPropertyChanged(nameof(RemoveToping));
+                    OnPropertyChanged(nameof(RemoveDrinkToping));
+                }
+            }
+        }
+
+        RelayCommand confirmRemove;
+        public RelayCommand ConfirmRemove
+        {
+            get
+            {
+                return confirmRemove ??=
+                  new RelayCommand(obj =>
+                  {
+                      ConfirmView = true;
+                  }, obj => true);//canExecute
+            }
+        }
+
+        RelayCommand removeAnsw;
+        public RelayCommand RemoveAnsw
+        {
+            get
+            {
+                return removeAnsw ??=
+                  new RelayCommand(obj =>
+                  {
+                      Removing = bool.Parse((string)obj);
+                      ConfirmView = false;
+                  }, obj => true);//canExecute
+            }
+        }
+
+        private bool isChecked;
+        public bool IsChecked
+        {
+            get { return isChecked; }
+            set
+            {
+                if (isChecked != value)
+                {
+                    isChecked = value;
+                    OnPropertyChanged(nameof(IsChecked));
+                }
             }
         }
         #endregion

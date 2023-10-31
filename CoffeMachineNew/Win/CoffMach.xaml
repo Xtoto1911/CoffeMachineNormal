@@ -5,25 +5,103 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CoffeMachineNew.Win"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="Black">
+             d:DesignHeight="450" d:DesignWidth="800"
+             xmlns:gif ="https://github.com/XamlAnimatedGif/XamlAnimatedGif">
+    <Grid >
+        <Grid.Background>
+            <ImageBrush ImageSource="\Resources\backMach1.jpg"/>
+        </Grid.Background>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="12*"/>
-            <ColumnDefinition Width="46*"/>
-            <ColumnDefinition Width="12*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="9*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="11*"/>
-            <RowDefinition Height="14*"/>
+            <RowDefinition Height="230*"/>
+            <RowDefinition Height="167*"/>
+            <RowDefinition Height="53*"/>
         </Grid.RowDefinitions>
+        <Button x:Name="ChangeBTN"
+                Width="50"
+                Height="50"
+                Grid.Column="3" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Bottom" 
+                Click="ChangeBTN_Click">
+            <Button.Background>
+                <ImageBrush ImageSource="\Resources\change.png"/>
+            </Button.Background>
+        </Button>
+        <Grid x:Name="PayBar"
+              Grid.Row="1"
+              Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50*"/>
+                <RowDefinition Height="50*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="MoneyBar"
+                   Background="#FF78A0CC"
+                   BorderBrush="Black"
+                   BorderThickness="4.5"
+                   Foreground="Lime"
+                   ContentStringFormat="0 р"
+                   Content="{Binding Wallet}"
+                   HorizontalContentAlignment="Center" 
+                   VerticalContentAlignment="Center" 
+                   FontFamily="Bahnschrift SemiBold" 
+                   FontSize="28" 
+                   MouseDown="MoneyBar_MouseDown" 
+                   Cursor="Hand">
+            </Label>
+            <Label x:Name="Terminal"
+                   Grid.Column="1" 
+                   Background="#FF373523"
+                   BorderBrush="Black"
+                   BorderThickness="4.5"
+                   FontSize="40"
+                   Content="___________"
+                   FontFamily="Bahnschrift SemiBold"
+                   AllowDrop="True" 
+                   Drop="Terminal_Drop"
+                   
+                   >
+
+            </Label>
+            <Border BorderBrush="Black"
+                    Background="White"
+                    BorderThickness="3" 
+                    Grid.Column="2">
+                <Image x:Name="Coin"
+                       gif:AnimationBehavior.SourceUri="/Resources/Coin.gif"
+                       Stretch="Fill"
+                       Visibility="Hidden"
+                       />
+            </Border>
+        </Grid>
+        <Border BorderBrush="Black"
+                BorderThickness="5"
+                Grid.Row="1"
+                Grid.Column="1" 
+                Background="#FF845959">
+            <Image x:Name="Cup" 
+                   Source="{Binding ImageOrder}"
+                   Opacity="0" MouseDown="Cup_MouseDown"/>
+        </Border>
         <local:CoffBar x:Name="Bar"
                        DataContext="{Binding ViewModelBar}"
-                 Grid.Row="0" 
-                 Grid.Column="1"/>
+                       Grid.Row="0" 
+                       Grid.Column="1" Grid.ColumnSpan="2"/>
         <Button x:Name="AdminBtn" 
-            Height="20" 
-            Width="20" 
-            HorizontalAlignment="Right" 
-            Click="AdminBtn_Click" VerticalAlignment="Top" Grid.Column="2"/>
+                Height="20" 
+                Width="20" 
+                HorizontalAlignment="Right" 
+                Click="AdminBtn_Click" 
+                VerticalAlignment="Top" Grid.Column="3"/>
     </Grid>
 </UserControl>

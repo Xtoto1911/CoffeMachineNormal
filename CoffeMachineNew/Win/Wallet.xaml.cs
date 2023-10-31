@@ -10,26 +10,30 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using CoffeMachineNew.Win;
-using Xceed.Wpf.Toolkit.Panels;
 
-namespace CoffeMachineNew
+namespace CoffeMachineNew.Win
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Логика взаимодействия для Wallet.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Wallet : Window
     {
-        public MainWindow()
+        public Wallet()
         {
             InitializeComponent();
         }
 
+        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Image money = (Image)sender;
+            DragDrop.DoDragDrop(money, money.Tag.ToString(), DragDropEffects.Move);
+        }
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Application.Current.Shutdown();
+            e.Cancel = true;
+            Visibility = Visibility.Hidden;
         }
     }
 }

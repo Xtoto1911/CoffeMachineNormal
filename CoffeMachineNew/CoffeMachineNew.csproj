@@ -7,4 +7,39 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Resources\BackList.jpg" />
+    <None Remove="Resources\backMach1.jpg" />
+    <None Remove="Resources\backMach2.jpg" />
+    <None Remove="Resources\BackWallet.jpg" />
+    <None Remove="Resources\change.png" />
+    <None Remove="Resources\Coin.gif" />
+    <None Remove="Resources\kofe.png" />
+    <None Remove="Resources\latte.jpg" />
+    <None Remove="Resources\Rub10.jpg" />
+    <None Remove="Resources\Rub100.jpg" />
+    <None Remove="Resources\Rub5.jpg" />
+    <None Remove="Resources\Rub50.jpg" />
+    <None Remove="Resources\Rus5.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
+    <PackageReference Include="XamlAnimatedGif" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\BackList.jpg" />
+    <Resource Include="Resources\backMach1.jpg" />
+    <Resource Include="Resources\BackWallet.jpg" />
+    <Resource Include="Resources\change.png" />
+    <Resource Include="Resources\Coin.gif" />
+    <Resource Include="Resources\kofe.png" />
+    <Resource Include="Resources\latte.jpg" />
+    <Resource Include="Resources\Rub10.jpg" />
+    <Resource Include="Resources\Rub100.jpg" />
+    <Resource Include="Resources\Rub5.jpg" />
+    <Resource Include="Resources\Rub50.jpg" />
+  </ItemGroup>
+
 </Project>
