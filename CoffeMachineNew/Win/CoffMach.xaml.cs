@@ -140,16 +140,7 @@ namespace CoffeMachineNew.Win
 
         private void MoneyBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (wal != null)
-                wal.Activate();
-            else
-                (wal ??= new()).Closed += WalletDestroy;
             wal.Show();
-        }
-
-        private void WalletDestroy(object? sender, EventArgs e)
-        {
-            wal = null;
         }
 
         private void Terminal_Drop(object sender, DragEventArgs e)
