@@ -163,6 +163,11 @@ namespace CoffeMachineNew.Win
                 Cup.BeginAnimation(OpacityProperty, null);
                 ViewModelBar.Done = true;
                 Cup.Opacity = 0;
+                if (ViewModelBar.DrinksView == false)
+                {
+                    ViewModelBar.ProgressView = false;
+                    ViewModelBar.DrinksView = true;
+                }
             }
         }
 
