@@ -118,9 +118,11 @@ namespace CoffeMachineNew.Win
             if (!Directory.Exists(Environment.CurrentDirectory + "/Resources"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + "/Resources");
             if (!File.Exists(Environment.CurrentDirectory + $"/Resources/{PathName}Drinks.json"))
-                File.Create(Environment.CurrentDirectory + $"/Resources/{PathName}Drinks.json");
+            {
+                using (File.Create(Environment.CurrentDirectory + $"/Resources/{PathName}Drinks.json")) { }
+            }
             if (!File.Exists(Environment.CurrentDirectory + $"/Resources/{PathName}Topings.json"))
-                File.Create(Environment.CurrentDirectory + $"/Resources/{PathName}Topings.json");
+                using (File.Create(Environment.CurrentDirectory + $"/Resources/{PathName}Topings.json")) { }
         }
 
         private void AdminBtn_Click(object sender, RoutedEventArgs e)//админ панель
