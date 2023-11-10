@@ -67,7 +67,7 @@ namespace CoffeMachineNew.Win
             }
         }
 
-        private string imageOrder;// картинка для анимации готового продукта
+        private string imageOrder;// картинка для анимации готового продукта 
         public string ImageOrder
         {
             get => imageOrder;
