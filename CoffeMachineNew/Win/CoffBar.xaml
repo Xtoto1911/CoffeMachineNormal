@@ -204,14 +204,14 @@
             </ListView>
             <Button x:Name="DellCoffe"
                 Background="Red"
-                Content="Удалить" 
+                Content="Отменить/удалить" 
                 Grid.Row="3" 
                 FontSize="14" 
                 Command="{Binding DataContext.RemoveDrink, RelativeSource={RelativeSource AncestorType=UserControl}}"
                 Grid.Column="1" 
                 />
-            <Button x:Name="Back"
-                Background="LightGray"
+            <Button x:Name="Сохранить"
+                Background="LightGreen"
                 Content="Назад" 
                 Grid.Row="3" 
                 Command="{Binding ShowDrinks}"
@@ -274,7 +274,7 @@
                         <ColumnDefinition Width="50*"/>
                     </Grid.ColumnDefinitions>
                     <Button Background="LightGreen"
-                            Content= "{Binding Sum, StringFormat=Заказать {0} р.}"
+                            Content= "Заказать"
                             Grid.Column="1" 
                             FontSize="14" 
                             Command="{Binding CreateOrder}"
